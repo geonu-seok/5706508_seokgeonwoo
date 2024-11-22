@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
+#define SIZE 100
+
+int total_insert_move = 0; //삽입정렬 이동 
+int total_bubble_move = 0; // 버블정렬 이동
+
+//출력 함수
+void print_list(int* list) {
+	for (int i = 0; i < SIZE - 1; i++) {
+		printf("%d ", list[i]);
+	}
+	printf("\n");
+}
+
+//선택 정렬
+void doSelectionSort(int* array) {
+	int copy[100];
+
+	for (int i = 0; i < 100; i++) {
+		copy[i] = array[i];
+	}
+
+	int min, temp;
+
+
+	for (int i = 0; i < SIZE - 1; i++) {
+
+		min = i; 
+		if ((i % 10 == 9 && i != 0) || i == SIZE - 2) {
+			printf("\n%d : step \n", i + 1);
+			print_list(copy);
+		}
+		for (int j = i + 1; j < SIZE; j++) {
+			if (copy[j] < copy[min]) min = j;
+		}
+
+		if (i != min) {
+			temp = copy[min];
+			copy[min] = copy[i];
+			copy[i] = temp;
+		}
+
+	}
+}
+
+//삽입정렬 - print(1 or 0)로 출력 여부 결정
+void InsertionSort(int array[], int print) {
+	int insert_move = 0;
+	int copy[100];
+
+	for (int i = 0; i < 100; i++) {
+		copy[i] = array[i];
+	}
+
+	int key, j;
+
+	for (int i = 1; i < SIZE; i++) {
+		key = copy[i];
+
+		for (j = i - 1; j >= 0; j--) {
+			insert_move++;
+			if (key >= copy[j]) break;
+			copy[j + 1] = copy[j];
+		}
+		copy[j + 1] = key;
+	}
+	
+	total_insert_move += insert_move;
+	if (print == 1) {
+		for (int i = 0; i < SIZE; i++)
+			printf("%d ", copy[i]);
+	}
+}
+
+//20번 삽입정렬 진행행
+void doInsertionSort(int array[]) {
+
+	for (int i = 0; i < 20; i++) {
+		InsertionSort(array, 0);
+	}
+
+	printf("\nInsertion Sort Compare AVG : %d\n", total_insert_move / 20);
+	InsertionSort(array, 1);
+}
+
+//버블정렬 print로 출력 여부 결정
+void BubbleSort(int* array, int print) {
+	int bubble_move = 0;
+	int copy[100];
+
+	for (int i = 0; i < 100; i++) {
+		copy[i] = array[i];
+	}
+
+	int i, j, temp;
+	int swap = 1;
+
+	for (i = 0; i < SIZE - 1 && swap == 1; i++) {
+		swap = 0;
+		for (j = 0; j < SIZE - 1 - i; j++) {
+			if (copy[j] > copy[j + 1]) {
+				temp = copy[j];
+				copy[j] = copy[j + 1];
+				copy[j + 1] = temp;
+				swap = 1;
+
+				bubble_move += 3;
+			}
+		}
+	}
+	if (print == 1) {
+		for (int i = 0; i < SIZE; i++)
+			printf("%d ", copy[i]);
+	}
+	total_bubble_move += bubble_move;
+}
+
+//20번 버블정렬 실행
+void doBubbleSort(int array[]) {
+
+	for (int i = 0; i < 20; i++) {
+		BubbleSort(array, 0);
+	}
+	printf("\nBubble Sort Compare AVG : %d\n", total_bubble_move / 20);
+	InsertionSort(array, 1);
+
+}
+
+//랜덤리스트 생성성
+void generateRandomData(int list[]) {
+
+	srand((unsigned int)time(NULL));
+
+	for (int i = 0; i < 100; i++) {
+		list[i] = rand() % 1000;
+	}
+}
+
+int main() {
+	int randomData[SIZE];
+
+	generateRandomData(randomData);
+
+	doSelectionSort(randomData);
+	doInsertionSort(randomData);
+	doBubbleSort(randomData);
+
+	return 0;
+}
