@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#define SIZE 100
+
+int isFirst = 0;
+int rounds = 0;
+int sorted[SIZE];
+
+double totalComparisons = 0;
+double totalMoves = 0;
+
+double comparisonCount;
+double moveCount;
+
+void generateRandomArray(int list[]) {
+	srand((unsigned int)time(NULL));
+
+	for (int i = 0; i < SIZE; i++) {
+		list[i] = rand() % 1000;
+	}
+}
+// 랜덤 배열 생성
+
+void printlist(int* array) {
+	if (rounds % 10 == 0 && isFirst == 0) {
+		for (int i = 0; i < 10; i++)
+			printf("%3d ", array[i]);
+		printf("| ");
+		for (int i = SIZE / 2 - 1; i < SIZE / 2 + 10; i++)
+			printf("%3d ", array[i]);
+		printf("\n\n");
+	}
+}
+//특정 배열 출력
+
+void printArray(int* array, int size) {
+	for (int i = 0; i < size; i++) {
+		printf("%d ", array[i]);
+	}
+	printf("\n");
+}
+//전체 배열 출력
+
+void merge(int list[], int left, int mid, int right)
+{
+	int i, j, k, l;
+	i = left; j = mid + 1; k = left;
+	// 분할 정렬된 list의 합병
+
+	while (i <= mid && j <= right) {
+		comparisonCount++;
+		if (list[i] <= list[j]) {
+			sorted[k++] = list[i++];
+			moveCount++;
+		}
+		else {
+			sorted[k++] = list[j++];
+			moveCount++;
+		}
+	}
+	if (i > mid) { 	// 남아 있는 레코드의 일괄 복사
+		for (l = j; l <= right; l++) {
+			sorted[k++] = list[l];
+			moveCount++;
+		}
+	}
+	else { 	// 남아 있는 레코드의 일괄 복사
+		for (l = i; l <= mid; l++) {
+			sorted[k++] = list[l];
+			moveCount++;
+		}
+	}
+	// 배열 sorted[]의 리스트를 배열 list[]로 복사
+	for (l = left; l <= right; l++){
+		list[l] = sorted[l];
+		moveCount++;
+	}
+}
+//정렬된 sorted에 값을 넣는 함수
+
+void doMergeSort(int list[], int left, int right){
+	int mid;
+	if (left < right) {
+		rounds++; 
+		printlist(list);
+		mid = (left + right) / 2;
+
+
+		doMergeSort(list, left, mid);
+		doMergeSort(list, mid + 1, right);
+		merge(list, left, mid, right);
+	}
+}
+//합병 하는 함수
+
+
+int main() {
+	int array[SIZE];
+	for (int i = 0; i < 20; i++) {
+		generateRandomArray(array);
+		comparisonCount = 0;
+		moveCount = 0;
+
+		if (i == 0) {
+			printf("Merge Sort Run\n");
+			doMergeSort(array, 0, SIZE - 1);
+
+			printf("Result\n");
+			printArray(array, SIZE);
+			isFirst++;
+		}
+		else {
+			doMergeSort(array, 0, SIZE - 1);
+		}
+		totalComparisons += comparisonCount;
+		totalMoves += moveCount;
+
+	}
+
+	printf("\nAVG COMPARISONS : %.2f\n", totalComparisons / 20.0);
+	printf("AVG MOVES : %.2f\n", totalMoves / 20.0);
+
+	return 0;
+}
