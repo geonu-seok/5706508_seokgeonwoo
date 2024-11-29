@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define SIZE 100
+#define SWAP(x, y, t) ( (t)=(x), moveCount++, (x)=(y), moveCount++, (y)=(t), moveCount++ )
+
+int isFirst = 0;
+int rounds = 0;
+
+double totalComparisons = 0;
+double totalMoveCount = 0;
+
+double comparisonCount;
+double moveCount;
+
+void generateRandomData(int list[]) {
+
+	srand((unsigned int)time(NULL));
+
+	for (int i = 0; i < 100; i++) {
+		list[i] = rand() % 1000;
+	}
+} 
+// 랜덤 배열 생성
+
+void printlist(int* array) {
+	if (rounds % 10 == 0 && isFirst == 0) {
+		for (int i = 40; i < 60; i++)
+			printf("%d ", array[i]);
+		printf("\n\n");
+	}
+	rounds++;
+}
+//전체 배열 출력
+
+void printArray(int* array, int size) {
+	for (int i = 0; i < size; i++) {
+		printf("%d ", array[i]);
+	}
+	printf("\n");
+}
+//특정 배열 출력
+
+int partition(int list[], int left, int right)
+{
+	int pivot, temp;
+	int low, high;
+
+	low = left;
+	high = right + 1;
+	pivot = list[left];
+
+	do {
+		do {
+			low++;
+			comparisonCount++;
+		} while (low <= right && list[low] < pivot);
+
+		do {
+			high--;
+			comparisonCount++;
+		} while (high >= left && list[high] > pivot);
+
+		if (low < high) {
+			SWAP(list[low], list[high], temp);
+		}
+	} while (low < high);
+
+	SWAP(list[left], list[high], temp);
+	return high;
+}
+//분할 함수. pivot을 기준으로 피벗보다 작은거/ 피벗보다 큰거 기준으로 swap 한다다
+
+void doQuickSort(int * list, int left, int right) {
+	if (left < right) {
+		printlist(list);
+		rounds++;
+		int q = partition(list, left, right);
+		doQuickSort(list, left, q - 1);
+		doQuickSort(list, q+1, right);
+	}
+}
+//퀵 정렬 함수
+
+int main(int argc, char * argy[]) {
+	srand(time(NULL));
+	int array[SIZE];
+
+	for (int i = 0; i < 20; i++) {
+		generateRandomData(array);
+		comparisonCount = 0;
+		moveCount = 0;
+
+
+		if (i == 0) {
+			printf("quick sort runt\n");
+			doQuickSort(array, 0, SIZE - 1);
+
+			printf("Result\n");
+			printArray(array, SIZE);
+			isFirst++;
+		}
+		else {
+			doQuickSort(array, 0, SIZE - 1);
+		}
+		totalComparisons += comparisonCount;
+		totalMoveCount += moveCount;
+	}
+
+	printf("\nAVG COMPARISOMS : %.2f\n", totalComparisons / 20);
+	printf("\nAVG MOVES : %.2f\n", totalMoveCount/20 );
+
+	return 0;
+}
