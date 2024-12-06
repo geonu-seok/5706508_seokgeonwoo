@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define SIZE 1000
+double compareCount; 
+//binary와 interpolation 두 함수에 모두 사용되는 인수
+
+void printArray(int* array) {
+	printf("Array Sorting Result :\n");
+
+	for (int i = 0; i < 20; i++) {
+		printf("%4d ", array[i]);
+	}
+	printf("\n");
+
+	for (int i = SIZE - 20; i < SIZE; i++) {
+		printf("%4d ", array[i]);
+	}
+	printf("\n\n");
+}
+//배열 출력 함수
+
+void generateRandomArray(int list[]) {
+	//srand((unsigned int)time(NULL));
+	for (int i = 0; i < SIZE; i++) {
+		list[i] = rand() % 10000;
+	}
+}
+//랜덤 함수 만들기
+
+void QuickSort(int* list, int left, int right) {
+	int L = left, R = right;
+	int temp;
+	int pivot = list[(L + R) / 2];
+
+	while (L <= R) {
+		while (list[L] < pivot) {
+			L++;
+		}
+		while (list[R] > pivot) {
+			R--;
+		}
+		if (L <= R) {
+			if (L != R) {
+				temp = list[L];
+				list[L] = list[R];
+				list[R] = temp;
+			}
+			L++;
+			R--;
+		}
+	}
+	if (L < right) QuickSort(list, L, right);
+	if (R > left) QuickSort(list, left, R);
+}
+//퀵정렬 함수
+
+int searchbinary(int *list, int key, int low, int high) {
+	int middle;
+	while (low <= high) {
+		middle = (low + high) / 2;
+		compareCount++;
+		if (key == list[middle]) {
+			compareCount++;
+			return middle;
+		}
+		else if (key > list[middle]) {
+			low = middle + 1;
+		}
+		else {
+			high = middle - 1;
+		}
+	}
+	return -1;
+}
+//바이너리 탐색
+
+double getAverageBinarySearchCompareCount(int* list) {
+	double avgcompare = 0;
+
+	for (int i = 0; i < 1000; i++) {
+		compareCount = 0;
+		int target = list[rand() % SIZE];
+		searchbinary(list, target, 0, SIZE - 1);
+		avgcompare += compareCount;
+	}
+	return avgcompare / 1000;
+}
+//1000번 바이너리 탐색 후 평균 비교횟수 출력
+
+int interpolsearch(int* list, int key, int n) {
+	int low, high, j;
+
+	low = 0;
+	high = n - 1;
+	while ((list[high] >= key) && (key > list[low])) {
+		compareCount++;
+		j = low + ((double)(key - list[low]) / (list[high] - list[low]) * (high - low));
+		if (key > list[j]) {
+			low = j + 1;
+			compareCount++;
+		}
+		else if (key < list[j]) {
+			high = j - 1;
+		}
+		else low = j;
+
+	}
+
+	compareCount++;
+	if (list[low] == key) {
+		//printf("탐색 성공\n");
+		return(low);
+	}
+	else {
+		//printf("탐색 실패\n");
+		return -1;
+	}
+}
+//interpolation 탐색 함수
+
+double getAverageInterpolationSearchComparecount(int * list){
+	double avgcompare = 0;
+
+	for (int i = 0; i < 1000; i++) {
+		compareCount = 0;
+		int target = list[rand() % SIZE];
+		interpolsearch(list, target, SIZE);
+		avgcompare += compareCount;
+	}
+	return avgcompare / 1000;
+}
+//1000번 interpolation 탐색 함수 수행 후, 평균 비교횟수 출력
+
+
+int main(int argc, char* argv[]) {
+	srand(time(NULL));
+	int array[SIZE];
+	generateRandomArray(array);
+
+	QuickSort(array, 0, SIZE - 1);
+	printArray(array);
+	
+	printf("Average Compare Count of Binary Search: %.2f\n",
+		getAverageBinarySearchCompareCount(array));
+	
+	printf("Average Compare Count of Interpolation Search: %.2f\n",
+		getAverageInterpolationSearchComparecount(array));
+
+	return 0;
+}
