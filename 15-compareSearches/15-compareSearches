@@ -49,7 +49,7 @@ double getAverageLinearSearchCompareCount(int list[]) {
 		int random = list[rand() % 1000]; 
 		comparecount = 0;
 		linersearch(list, random);
-		avgcompare +력
+		avgcompare += comparecount;
 
 int main(int argc, char* argv[]) {
 	srand((unsigned int)time(NULL));
